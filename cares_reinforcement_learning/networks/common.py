@@ -202,6 +202,7 @@ class GaussianPolicy(BasePolicy):
 
 
 class TanhGaussianPolicy(BasePolicy):
+    '''Output: (sampled value, log prob of sample, distribution mean)'''
     def __init__(
         self,
         input_size: int,
@@ -235,7 +236,6 @@ class TanhGaussianPolicy(BasePolicy):
 
         # constrain log_std inside [log_std_min, log_std_max]
         log_std = torch.tanh(log_std)
-
         log_std_min, log_std_max = self.log_std_bounds
         log_std = log_std_min + 0.5 * (log_std_max - log_std_min) * (log_std + 1)
 
@@ -244,6 +244,8 @@ class TanhGaussianPolicy(BasePolicy):
         dist = SquashedNormal(mu, std)
         sample = dist.rsample()
         log_pi = dist.log_prob(sample).sum(-1, keepdim=True)
+        # print(log_std.min(), log_std.mean(), log_std.max())
+
 
         return sample, log_pi, dist.mean
 

@@ -423,6 +423,54 @@ class PPOConfig(AlgorithmConfig):
         ]
     )
 
+class PPO2Config(AlgorithmConfig):
+    algorithm: str = "PPO2"
+
+    actor_lr: float = 1e-4
+    critic_lr: float = 1e-3
+
+    gamma: float = 0.99
+    eps_clip: float = 0.2
+
+    # NOTE: different to original: added GAE and thus lambda param for variance/bias trade off. 
+    # 0 eval to one step td, 1 eval to monte carlo
+    lambda_gae: float = 0.95
+
+    # NOTE: different to original: made sd learnable param instead of fixed
+    log_std_bounds: list[float] = [-5, 2]
+
+    # Value loss coef for updating
+    value_loss_coef:float = 1
+
+    # Entropy bonus coef 
+    entropy_bonus_coef:float = 0.01
+
+    # TODO is this G?
+    updates_per_iteration: int = 10
+
+    number_steps_per_train_policy: int = 5000
+
+    max_steps_exploration: int = 0
+
+    actor_config: MLPConfig = MLPConfig(
+        layers=[
+            TrainableLayer(layer_type="Linear", out_features=256),
+            FunctionLayer(layer_type="ReLU"),
+            TrainableLayer(layer_type="Linear", in_features=256, out_features=256),
+            FunctionLayer(layer_type="ReLU"),
+        ]
+    )
+
+    critic_config: MLPConfig = MLPConfig(
+        layers=[
+            TrainableLayer(layer_type="Linear", out_features=256),
+            FunctionLayer(layer_type="ReLU"),
+            TrainableLayer(layer_type="Linear", in_features=256, out_features=256),
+            FunctionLayer(layer_type="ReLU"),
+            TrainableLayer(layer_type="Linear", in_features=256, out_features=1),
+        ]
+    )
+
 
 ###################################
 #         SAC Algorithms          #
