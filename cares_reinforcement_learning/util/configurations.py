@@ -437,7 +437,7 @@ class PPO2Config(AlgorithmConfig):
     lambda_gae: float = 0.95
 
     # NOTE: different to original: made sd learnable param instead of fixed
-    log_std_bounds: list[float] = [-5, 2]
+    log_std_bounds: list[float] = [-20, 2]
 
     # Value loss coef for updating
     value_loss_coef:float = 1
@@ -446,7 +446,7 @@ class PPO2Config(AlgorithmConfig):
     entropy_bonus_coef:float = 0.01
 
     # TODO is this G?
-    updates_per_iteration: int = 10
+    updates_per_iteration: int = 80
 
     number_steps_per_train_policy: int = 5000
 
@@ -454,20 +454,22 @@ class PPO2Config(AlgorithmConfig):
 
     actor_config: MLPConfig = MLPConfig(
         layers=[
-            TrainableLayer(layer_type="Linear", out_features=256),
+            TrainableLayer(layer_type="Linear", out_features=1024),
             FunctionLayer(layer_type="ReLU"),
-            TrainableLayer(layer_type="Linear", in_features=256, out_features=256),
+            TrainableLayer(layer_type="Linear", in_features=1024, out_features=1024),
             FunctionLayer(layer_type="ReLU"),
+            TrainableLayer(layer_type="Linear", in_features=1024),
+            FunctionLayer(layer_type="Tanh"),
         ]
     )
 
     critic_config: MLPConfig = MLPConfig(
         layers=[
-            TrainableLayer(layer_type="Linear", out_features=256),
+            TrainableLayer(layer_type="Linear", out_features=1024),
             FunctionLayer(layer_type="ReLU"),
-            TrainableLayer(layer_type="Linear", in_features=256, out_features=256),
+            TrainableLayer(layer_type="Linear", in_features=1024, out_features=1024),
             FunctionLayer(layer_type="ReLU"),
-            TrainableLayer(layer_type="Linear", in_features=256, out_features=1),
+            TrainableLayer(layer_type="Linear", in_features=1024, out_features=1),
         ]
     )
 
