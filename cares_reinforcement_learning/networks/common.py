@@ -244,8 +244,6 @@ class TanhGaussianPolicy(BasePolicy):
         dist = SquashedNormal(mu, std)
         sample = dist.rsample()
         log_pi = dist.log_prob(sample).sum(-1, keepdim=True)
-        # print(log_std.min(), log_std.mean(), log_std.max())
-
 
         return sample, log_pi, dist.mean
 
